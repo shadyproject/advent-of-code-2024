@@ -1,4 +1,4 @@
-package main
+package aoc2024
 
 import (
 	"fmt"
@@ -10,7 +10,7 @@ import (
 	"github.com/herrnan/aoc-helper"
 )
 
-func main() {
+func Day1() {
 
 	h, err := aoc.NewHelper(1, 2024)
 	exitIfError(err)
@@ -18,9 +18,7 @@ func main() {
 	input, err := h.GetInput()
 	exitIfError(err)
 
-	answer := Day1(input)
-
-	fmt.Printf("Day 1 answer: %v\n", answer)
+	fmt.Printf("Day 1 answer: %v\n", Part1(input))
 	fmt.Printf("Day 1 part 2 answer: %v", Part2(input))
 }
 
@@ -29,18 +27,16 @@ func exitIfError(err error) {
 		fmt.Printf("Error: %v", err)
 		os.Exit(1)
 	}
-
 }
 
 func Abs(x int) int {
 	if x < 0 {
 		return -x
 	}
-
 	return x
 }
 
-func Day1(input string) (totalDistance int) {
+func Part1(input string) (totalDistance int) {
 	left := make([]int, len(input))
 	right := make([]int, len(input))
 

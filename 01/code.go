@@ -1,4 +1,4 @@
-package aoc2024
+package main
 
 import (
 	"fmt"
@@ -10,8 +10,7 @@ import (
 	"github.com/herrnan/aoc-helper"
 )
 
-func Day1() {
-
+func main() {
 	h, err := aoc.NewHelper(1, 2024)
 	exitIfError(err)
 

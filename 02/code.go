@@ -1,7 +1,9 @@
 package main
 
 import (
+	"cmp"
 	"fmt"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -103,86 +105,76 @@ func Abs(x int) int {
 	return x
 }
 
-func Part2(input string) int {
-	numSafe := 0
-	var safe []string
-	var unsafe []string
+func ParseReports(input string) [][]int {
+	var reports [][]int
 
-	reports := strings.Split(input, "\n")
+	lines := strings.Split(input, "\n")
 
-	for _, report := range reports {
-		if report == "" {
+	for _, line := range lines {
+		if line == "" {
 			continue
 		}
-		if IsReportSafeWithDamping(report) {
-			numSafe += 1
-			safe = append(safe, report)
-		} else {
-			unsafe = append(unsafe, report)
-			fmt.Printf("UNSAFE: %v\n", report)
+		chunks := strings.Split(line, " ")
+		var levels []int
+		for _, l := range chunks {
+			level, _ := strconv.Atoi(l)
+			levels = append(levels, level)
 		}
+
+		reports = append(reports, levels)
 	}
 
-	fmt.Printf("Num safe: %v\n", len(safe))
-	fmt.Printf("Num unsafe (after damping): %v\n", len(unsafe))
+	return reports
+}
+
+func Part2(input string) int {
+	reports := ParseReports(input)
+	numSafe := 0
+
+	for _, report := range reports {
+		idx := DampSafe(report)
+		if idx == -1 {
+			numSafe += 1
+		} else {
+			if DampSafe(RemoveElement(report, idx-1)) == -1 || DampSafe(RemoveElement(report, idx)) == -1 || DampSafe(RemoveElement(report, 0)) == -1 {
+				numSafe += 1
+			}
+		}
+	}
 
 	return numSafe
 }
 
-func IsReportSafeWithDamping(report string) bool {
-	safe := true
-	levels := strings.Fields(report)
-	trend := LevelTrend(levels[0], levels[1])
-	skipIndex := -1
+func DampSafe(report []int) int {
+	prev := 0
+	trend := 0
 
-	for i := 0; i < len(levels)-1; i++ {
-		if LevelTrend(levels[i], levels[i+1]) == LEVEL_EQUAL {
-			skipIndex = i
-			break
+	for i, level := range report {
+		if prev == 0 {
+			prev = level
 		} else {
-			if LevelTrend(levels[i], levels[i+1]) != trend {
-				skipIndex = i
-				break
+			currentTrend := cmp.Compare(prev, level)
+			delta := Abs(prev - level)
+
+			if delta > MAX_SAFE_DELTA || currentTrend == 0 {
+				return i
 			}
 
-			if !IsTrendSafe(levels[i], levels[i+1]) {
-				skipIndex = i
-				break
+			if trend == 0 {
+				trend = currentTrend
+			} else if trend != currentTrend {
+				return i
 			}
+
+			prev = level
 		}
 	}
 
-	// this feels ugly
-	if skipIndex != -1 {
-		dampReport := ""
-		for i := 0; i < len(levels); i++ {
-			if i == skipIndex {
-				continue
-			} else {
-				dampReport += string(levels[i]) + " "
-			}
-		}
-		if IsReportSafe(dampReport) {
-			safe = true
-		} else {
-			dampReport = ""
-			// fuck it, try dropping the first and last since I know those are edge cases
-			for i := 1; i < len(levels); i++ {
-				dampReport += string(levels[i]) + " "
-			}
+	return -1
+}
 
-			if IsReportSafe(dampReport) {
-				safe = true
-			} else {
-				dampReport = ""
-				for i := 0; i < len(levels)-1; i++ {
-					dampReport += string(levels[i]) + " "
-				}
-
-				safe = IsReportSafe(dampReport)
-			}
-		}
-	}
-
-	return safe
+func RemoveElement[S ~[]E, E any](s S, i int) S {
+	result := make([]E, len(s))
+	copy(result, s)
+	return slices.Delete(result, i, i+1)
 }

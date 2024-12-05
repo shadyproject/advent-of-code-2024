@@ -9,9 +9,21 @@ import (
 const Day = 0
 const Year = 2024
 
+func GetInput(sample bool) string {
+	var input string
+	if sample {
+		input = "TODO PASTE ME HERE"
+	} else {
+
+		h, _ := aoc.NewHelper(Day, Year)
+		input, _ = h.GetInput()
+	}
+	return input
+}
+
 func main() {
-	h, _ := aoc.NewHelper(Day, Year)
-	input, _ := h.GetInput()
+
+	input := GetInput(true)
 
 	fmt.Printf("Day %v\n", Day)
 	fmt.Printf("Part 1: %v\n", Part1(input))

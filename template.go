@@ -2,17 +2,27 @@ package main
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/herrnan/aoc-helper"
 )
 
-const Day = 0
+const Day = 6
 const Year = 2024
+
+func GetSampleData() string {
+	bytes, err := os.ReadFile("sample.txt")
+	if err != nil {
+		fmt.Printf("Error loading sample data: %v\n", err)
+	}
+
+	return string(bytes)
+}
 
 func GetInput(sample bool) string {
 	var input string
 	if sample {
-		input = "TODO PASTE ME HERE"
+		input = GetSampleData()
 	} else {
 
 		h, _ := aoc.NewHelper(Day, Year)

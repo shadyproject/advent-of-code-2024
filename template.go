@@ -7,7 +7,7 @@ import (
 	"github.com/herrnan/aoc-helper"
 )
 
-const Day = 6
+const Day = 0
 const Year = 2024
 
 func GetSampleData() string {

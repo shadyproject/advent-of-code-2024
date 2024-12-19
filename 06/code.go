@@ -110,11 +110,11 @@ func NewGuard(startRow int, startCol int) Guard {
 		DOWN:  LEFT,
 		LEFT:  UP,
 	}
-	return Guard{position: []int{startRow, startCol}, facing: UP, stepCount: 0, rotations: mr}
+	return Guard{position: NewLocation(startRow, startCol), facing: UP, stepCount: 0, rotations: mr}
 }
 
 func (g Guard) String() string {
-	return fmt.Sprintf("row:%d col:%d facing:%s", g.position[0], g.position[1], g.facing)
+	return fmt.Sprintf("row:%d col:%d facing:%s", g.position.Row, g.position.Column, g.facing)
 }
 
 func (g *Guard) Walk(m Map) int {

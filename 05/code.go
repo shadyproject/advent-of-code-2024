@@ -100,6 +100,7 @@ func UpdateToRuleChain(update string) []string {
 	return ruleChain
 }
 
+// check if a given update chain
 func RulesContainChain(rules []string, ruleChain []string) bool {
 	foundChain := false
 
@@ -120,6 +121,85 @@ func RulesContainChain(rules []string, ruleChain []string) bool {
 	return foundChain
 }
 
-func Part2(input string) int {
-	return 0
+type Rule struct {
+	before int
+	after  int
 }
+
+type Update []int
+
+func NewRule(rule string) Rule {
+	parts := strings.Split(rule, "|")
+
+	b, _ := strconv.Atoi(parts[0])
+	a, _ := strconv.Atoi(parts[1])
+
+	return Rule{before: b, after: a}
+}
+
+func (r Rule) String() string {
+	return fmt.Sprintf("%d|%d", r.before, r.after)
+}
+
+func Part2(input string) (middlePageSum int) {
+	parts := strings.Split(input, "\n\n")
+
+	rules := make([]Rule, 0)
+
+	for _, rule := range strings.Split(parts[0], "\n") {
+		rules = append(rules, NewRule(rule))
+	}
+	updates := strings.Split(parts[1], "\n")
+
+	// for _, u := range updates {
+	// 	updateRule := UpdateToRuleChain(u)
+	// 	updateInChain := RulesContainChain(rules, updateRule)
+
+	// 	if !updateInChain {
+	// 		fmt.Printf("Found bad update: %v ", u)
+	// 		invalid := FindInvalidUpdateRules(rules, updateRule)
+	// 		fmt.Printf("invalid update rules: %v\n", invalid)
+	// 		 fmt.Printf("fixed: %v\n", fixed)
+	// 		 page := FindMiddlePage(fixed)
+	// 		 middlePageSum += page
+	// 	}
+	// }
+
+	return middlePageSum
+}
+
+func FindInvalidUpdateRules(rules []string, ruleChain []string) (invalidUpdates []string) {
+	for _, entry := range ruleChain {
+		found := false
+		for _, r := range rules {
+			if entry == r {
+				found = true
+				break
+			}
+		}
+		if !found {
+			invalidUpdates = append(invalidUpdates, entry)
+		}
+	}
+	return invalidUpdates
+}
+
+// func FixUpdate(rules []string, update string) (fixed string) {
+// 	pages := strings.Split(update, ",")
+// 	for i := 0; i < len(pages); i++ {
+// 		first := pages[i]
+// 		second := pages[i+1]
+// 		rule := first + "|" + second
+
+// 		for _, r := range rules {
+// 			if r == rule {
+// 				continue
+// 			} else {
+// 				first = second
+// 			}
+// 		}
+
+// 		fixed += first + ","
+// 	}
+// 	return fixed
+// }

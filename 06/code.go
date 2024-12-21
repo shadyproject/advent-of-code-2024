@@ -51,7 +51,7 @@ func NewLocation(row, column int) Location {
 }
 
 func (l Location) String() string {
-	return fmt.Sprintf("Row: %d Column: %d\n", l.Row, l.Column)
+	return fmt.Sprintf("(Row: %d Column: %d)", l.Row, l.Column)
 }
 
 // true is passable false is not
@@ -101,6 +101,7 @@ type Guard struct {
 	facing    string
 	stepCount int
 	rotations map[string]string
+	path      []Location
 }
 
 func NewGuard(startRow int, startCol int) Guard {
@@ -110,11 +111,11 @@ func NewGuard(startRow int, startCol int) Guard {
 		DOWN:  LEFT,
 		LEFT:  UP,
 	}
-	return Guard{position: NewLocation(startRow, startCol), facing: UP, stepCount: 0, rotations: mr}
+	return Guard{position: NewLocation(startRow, startCol), facing: UP, stepCount: 0, rotations: mr, path: make([]Location, 0)}
 }
 
 func (g Guard) String() string {
-	return fmt.Sprintf("row:%d col:%d facing:%s", g.position.Row, g.position.Column, g.facing)
+	return fmt.Sprintf("row:%d col:%d facing:%s\n%v", g.position.Row, g.position.Column, g.facing, g.path)
 }
 
 func (g *Guard) Walk(m Map) int {
@@ -143,13 +144,15 @@ func (g *Guard) Walk(m Map) int {
 	// not passable
 	if !m[newLoc.Row][newLoc.Column] {
 		g.facing = g.rotations[g.facing]
-		fmt.Println("Rotating to %v", g.facing)
+		fmt.Println("Rotating ", g.facing)
 	} else {
+		g.path = append(g.path, newLoc)
 		g.position = newLoc
-		fmt.Println("Moving to %v", newLoc)
+		fmt.Println("Moving to ", newLoc)
 		g.stepCount += 1
 	}
 
+	fmt.Println("Step count: ", g.stepCount)
 	return g.Walk(m)
 }
 
@@ -158,7 +161,10 @@ func Part1(input string) int {
 	m, g := NewMap(input)
 	fmt.Printf("%v\n", m)
 	fmt.Printf("Guard at %s\n", g)
-	return g.Walk(m)
+	steps := g.Walk(m)
+
+	fmt.Printf("%s\n", g)
+	return steps
 }
 
 func Part2(input string) int {
